@@ -5,3 +5,7 @@
 /ingestbeat
 /ingestbeat.test
 *.pyc
+
+/vendor
+/data
+/logs

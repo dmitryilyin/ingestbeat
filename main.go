@@ -4,8 +4,7 @@ import (
 	"os"
 
 	"github.com/dmitryilyin/ingestbeat/cmd"
-
-	_ "github.com/dmitryilyin/ingestbeat/include"
+	//	_ "github.com/dmitryilyin/ingestbeat/include"
 )
 
 func main() {
