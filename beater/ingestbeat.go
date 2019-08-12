@@ -41,27 +41,28 @@ func (bt *Ingestbeat) Run(b *beat.Beat) error {
 		return err
 	}
 
-	var fileNamesChannel chan string = make(chan string, 0)
+	var fileNamesChannel = make(chan string, 0)
 
-	filesDir := "test"
+	filesDir := "lib/test"
 	filesPatterns := []string{"*.log"}
 
+	logp.Info("Starting finders")
 	go bt.findFilesReadDir("0", filesDir, filesPatterns, fileNamesChannel)
 
-	go bt.processReadFile("0", fileNamesChannel)
+	logp.Info("Starting processors")
+	go bt.processReadFile("0", fileNamesChannel, b)
 
 	for {
+		logp.Info("Starting main loop")
 		select {
 		case <-bt.done:
 			return nil
 		}
-
-
 	}
 }
 
 // Stop stops ingestbeat.
 func (bt *Ingestbeat) Stop() {
-	bt.client.Close()
+	_ = bt.client.Close()
 	close(bt.done)
 }

@@ -1,11 +1,15 @@
 package beater
 
 import (
-	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/beat"
+	"github.com/elastic/beats/libbeat/common"
+	"github.com/elastic/beats/libbeat/logp"
+	"io/ioutil"
+	"os"
+	"time"
 )
 
-func (bt *Ingestbeat) processReadFile(instance string, fileNamesChannel <-chan string) {
+func (bt *Ingestbeat) processReadFile(instance string, fileNamesChannel <-chan string, b *beat.Beat) {
 	if instance == "" {
 		instance = "0"
 	}
@@ -15,10 +19,9 @@ func (bt *Ingestbeat) processReadFile(instance string, fileNamesChannel <-chan s
 		logp.Info("ProcessReadFile[%s]: receive \"%s\"", instance, filePath)
 		content, err := ioutil.ReadFile(filePath)
 		if err != nil {
-			logp.Panic(err)
+			logp.Error(err)
 		}
 		logp.Info("ProcessReadFile[%s]: sending %d bytes", instance, len(content))
-
 		event := beat.Event{
 			Timestamp: time.Now(),
 			Fields: common.MapStr{
@@ -27,7 +30,7 @@ func (bt *Ingestbeat) processReadFile(instance string, fileNamesChannel <-chan s
 			},
 		}
 		bt.client.Publish(event)
-
+		logp.Info("ProcessReadFile[%s]: marking \"%s\"", instance, filePath)
 		bt.processMarkDelete(filePath)
 	}
 }
@@ -37,7 +40,7 @@ func (bt *Ingestbeat) processMarkRename(filePath string) {
 	logp.Info("ProcessMarkRename: \"%s\" -> \"%s\"", filePath, newFilePath)
 	err := os.Rename(filePath, newFilePath)
 	if err != nil {
-		logp.Panic(err)
+		logp.Error(err)
 	}
 }
 
@@ -45,6 +48,6 @@ func (bt *Ingestbeat) processMarkDelete(filePath string) {
 	logp.Info("ProcessMarkDelete: \"%s\"", filePath)
 	err := os.Remove(filePath)
 	if err != nil {
-		logp.Panic(err)
+		logp.Error(err)
 	}
 }
