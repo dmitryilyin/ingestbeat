@@ -2,7 +2,6 @@ package beater
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
@@ -42,25 +41,22 @@ func (bt *Ingestbeat) Run(b *beat.Beat) error {
 		return err
 	}
 
-	ticker := time.NewTicker(bt.config.Period)
-	counter := 1
+	var fileNamesChannel chan string = make(chan string, 0)
+
+	filesDir := "test"
+	filesPatterns := []string{"*.log"}
+
+	go bt.findFilesReadDir("0", filesDir, filesPatterns, fileNamesChannel)
+
+	go bt.processReadFile("0", fileNamesChannel)
+
 	for {
 		select {
 		case <-bt.done:
 			return nil
-		case <-ticker.C:
 		}
 
-		event := beat.Event{
-			Timestamp: time.Now(),
-			Fields: common.MapStr{
-				"type":    b.Info.Name,
-				"counter": counter,
-			},
-		}
-		bt.client.Publish(event)
-		logp.Info("Event sent")
-		counter++
+
 	}
 }
 
