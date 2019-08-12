@@ -9,7 +9,7 @@ import (
 )
 
 func (bt *Ingestbeat) findCheckSkip(fileInfo os.FileInfo) bool {
-	logp.Info("FindCheckMarked: " + fileInfo.Name())
+	logp.Debug("find", "FindCheckMarked: " + fileInfo.Name())
 	if fileInfo.IsDir() {
 		return false
 	}
@@ -20,7 +20,7 @@ func (bt *Ingestbeat) findCheckSkip(fileInfo os.FileInfo) bool {
 }
 
 func (bt *Ingestbeat) findCheckMatch(fileInfo os.FileInfo, filePattern string) bool {
-	logp.Info("FindCheckMatch: " + fileInfo.Name())
+	logp.Debug("find", "FindCheckMatch: " + fileInfo.Name())
 	if fileInfo.IsDir() {
 		return false
 	}
@@ -36,9 +36,9 @@ func (bt *Ingestbeat) findFilesReadDir(instance string, fileDirectory string, fi
 	if instance == "" {
 		instance = "0"
 	}
-	logp.Info("FindFilesReadDir[%s]: start", instance)
+	logp.Debug("find", "FindFilesReadDir[%s]: start", instance)
 	for {
-		logp.Info("FindFilesReadDir[%s]: scan \"%s\"", instance, fileDirectory)
+		logp.Debug("find", "FindFilesReadDir[%s]: scan \"%s\"", instance, fileDirectory)
 		fileInfoList, err := ioutil.ReadDir(fileDirectory)
 		if err != nil {
 			logp.Error(err)
@@ -52,7 +52,7 @@ func (bt *Ingestbeat) findFilesReadDir(instance string, fileDirectory string, fi
 					continue
 				}
 				fileFullPath := fileDirectory + string(os.PathSeparator) + fileInfo.Name()
-				logp.Info("FindFilesReadDir[%s]: send \"%s\"", instance, fileFullPath)
+				logp.Debug("find", "FindFilesReadDir[%s]: send \"%s\"", instance, fileFullPath)
 				fileNamesChannel <- fileFullPath
 			}
 		}

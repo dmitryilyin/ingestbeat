@@ -7,6 +7,13 @@ ingestbeat:
   period: 1s
 
 output.console:
-  pretty: true
-  codec.format:
-    string: '%{[@timestamp]} %{[counter]}'
+  enabled: true
+  codec.json:
+    pretty: true
+#  codec.format:
+#    string: '%{[@timestamp]} %{[counter]}'
+
+logging:
+  level: info
+  to_files: false
+  to_stderr: true
